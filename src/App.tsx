@@ -2,10 +2,13 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import Category from './Components/Category.tsx'
+
 
 function App() {
   const [count, setCount] = useState(0)
-
+  console.log(import.meta.env.MODE);
+  console.log("baseUrl==>", import.meta.env.VITE_API_BASE_URL);
   return (
     <>
       <div>
@@ -18,6 +21,7 @@ function App() {
       </div>
       <h1>Vite + React</h1>
       <div className="card">
+        <Category></Category>
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>
