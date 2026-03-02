@@ -7,7 +7,7 @@ export default function Category() {
     let baseUrl = import.meta.env.VITE_API_BASE_URL;
 
     useEffect(() => {
-        fetch(baseUrl + "/FinancialTracker", {
+        fetch(baseUrl + "/categories", {
             method : "GET",
         }).then((response : Response) => {
             var res = response.json() as Promise<Category[]>;
