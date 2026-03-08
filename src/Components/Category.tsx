@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
-import {type Category} from "../Interfaces/Category.ts";
+import {type ICategory} from "../Interfaces/Interfaces.ts";
 
 export default function Category() {
 
-    const [categories, setCategories] = useState<Category[]>([]);
+    const [categories, setCategories] = useState<ICategory[]>([]);
     let baseUrl = import.meta.env.VITE_API_BASE_URL;
 
     useEffect(() => {
         fetch(baseUrl + "/categories", {
             method : "GET",
         }).then((response : Response) => {
-            var res = response.json() as Promise<Category[]>;
+            var res = response.json() as Promise<ICategory[]>;
 
-            res.then((categories : Category[]) => {
+            res.then((categories : ICategory[]) => {
                 console.log(categories);
                 setCategories(categories);
             }).catch((err) => {
