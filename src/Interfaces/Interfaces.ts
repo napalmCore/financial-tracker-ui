@@ -7,6 +7,6 @@ export interface ITransaction {
     id: number,
     amount: number,
     date: string,
-    categoryId: number,
+    category: ICategory,
     description: string
 }

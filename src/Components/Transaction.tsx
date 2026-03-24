@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { type ITransaction} from "../Interfaces/Interfaces.ts";
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import IconButton from '@mui/material/IconButton';
-import Stack from '@mui/material/Stack';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AlarmIcon from '@mui/icons-material/Alarm';
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { AddCircle } from "@mui/icons-material";
+
+
 
 export const Transaction = () => {
 
@@ -31,8 +29,10 @@ export const Transaction = () => {
 
     return (
         <>
-        <IconButton aria-label="delete">
-        <AddCircle/>
+        <IconButton aria-label="add transaction" color="primary">
+        <AddCircle onClick={() => {
+            window.location.href = "/add-transaction";
+        }}/>
         </IconButton>
         <DataGrid
             rows={transactions}
@@ -40,7 +40,7 @@ export const Transaction = () => {
                 { field: 'id', headerName: 'ID', width: 70 },
                 { field: 'amount', headerName: 'Amount', width: 130 },
                 { field: 'date', headerName: 'Date', width: 130 },
-                { field: 'categoryId', headerName: 'Category ID', width: 130 },
+                { field: 'Category', headerName: 'Category ID', width: 130, valueGetter: (value, row) => `${row.category?.name || ''}`,},
                 { field: 'description', headerName: 'Description', width: 200 },
             ]}
         />
