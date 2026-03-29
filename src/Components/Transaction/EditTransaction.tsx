@@ -2,16 +2,20 @@
 import { Alert, Autocomplete, Box, Button, FormControl, MenuItem, Select, Stack, type SelectChangeEvent } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import { useEffect, useState } from 'react';
-import type { ICategory } from '../Interfaces/Interfaces';
+import type { ICategory, ITransaction } from '../../Interfaces/Interfaces';
 import CheckIcon from '@mui/icons-material/Check';
+import { useParams } from 'react-router';
 
-export const AddTransaction = () => {
-    const [transactionType, settransactionType] = useState('');
-    const [amount, setAmount] = useState(0);
-    const [description, setDescription] = useState('');
+export const EditTransaction = (props : { transactionId?: string }) => {
+    const params = useParams();
     const [CategoryId, setCategoryId] = useState<number | null>(null);
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [transaction, setTransaction] = useState<ITransaction>({} as ITransaction);
+    const [transactionType, settransactionType] = useState('');
+    const [amount, setAmount] = useState(0);
+    const [description, setDescription] = useState('');
+    const [transactionId, setTransactionId] = useState(params.transactionId || '');  
 
     //TODO: Fetch categories from API
     const [Categories, setCategories] = useState<ICategory[]>([]);
@@ -27,8 +31,32 @@ export const AddTransaction = () => {
         });
     }
 
+    const GetTransaction = () => {
+        setIsLoading(true);
+        if (transactionId) {
+            fetch(import.meta.env.VITE_API_BASE_URL + "/transactions/GetById/" + transactionId, {
+                method: "GET",
+            }).then((response: Response) => {
+                var res = response.json() as Promise<ITransaction>;
+                res.then((transaction) => {
+                    setTransaction(transaction);
+                    settransactionType(transaction.typeId);
+                    setAmount(transaction.amount);
+                    setDescription(transaction.description);
+                    setCategoryId(transaction.category?.id);
+                    setIsLoading(false);
+                }).catch(() => {
+                    setIsLoading(false);
+                    // Handle error (e.g., show an error message)
+                    console.log("Error fetching transaction" + transactionId);
+                });
+            });
+        }
+    }
+
     useEffect(() => {
         GetCategories();
+        GetTransaction();
     }, []);
 
     const handleChange = (event: SelectChangeEvent) => {
@@ -38,26 +66,38 @@ export const AddTransaction = () => {
     const handleSubmit = () => {
         if (formIsValid()) {
             setIsLoading(true);
-            fetch(import.meta.env.VITE_API_BASE_URL + "/transactions/Create", {
-                method: "POST",
+            fetch(import.meta.env.VITE_API_BASE_URL + "/transactions/Update/" + transactionId, {
+                method: "PATCH",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
+                    id: transactionId,
                     typeId: transactionType,
                     amount: amount,
                     description: description,
-                    CategoryId: CategoryId,
-                    Date : new Date().toISOString()
+                    CategoryId: CategoryId
                 })
-            }).then(() => {
+            }).then((e : Response) => {
+                var res = e.json() as Promise<ITransaction>;
+                res.then((transaction) => {
+                    setTransaction(transaction);
+                    settransactionType(transaction.typeId);
+                    setAmount(transaction.amount);
+                    setDescription(transaction.description);
+                    setCategoryId(transaction.category?.id);
+                    setShowSuccessMessage(true);
+                }).catch((error) => {
+                    // Handle error (e.g., show an error message)
+                    console.log("Error parsing response after updating transaction" + transactionId);
+                    console.log(error);
+                 });
                 setIsLoading(false);
-                setShowSuccessMessage(true);
-                // Reset form fields
-                onCancel();
-            }).catch(() => {
+            }).catch((e) => {
                 setIsLoading(false);
                 // Handle error (e.g., show an error message)
+                console.log("Error updating transaction" + transactionId);
+                console.log(e);  
             });
         }
 
@@ -66,10 +106,10 @@ export const AddTransaction = () => {
 
     const onCancel = () => {
         // Reset form fields
-        settransactionType('');
-        setAmount(0);
-        setDescription('');
-        setCategoryId(null);
+        settransactionType(transaction.typeId);
+        setAmount(transaction.amount);
+        setDescription(transaction.description);
+        setCategoryId(transaction.category?.id || null );
     }
 
     const formIsValid = () => {
@@ -91,7 +131,7 @@ export const AddTransaction = () => {
                     error={transactionType === ''}
                     labelId="demo-simple-select-label"
                     id="transaction-type-select"
-                    value={transactionType}
+                    value={transactionType || '' }
                     label="Type"
                     onChange={handleChange}
                     required

@@ -8,5 +8,6 @@ export interface ITransaction {
     amount: number,
     date: string,
     category: ICategory,
-    description: string
+    description: string,
+    typeId: string
 }

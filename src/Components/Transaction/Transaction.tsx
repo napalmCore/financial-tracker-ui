@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { type ITransaction} from "../Interfaces/Interfaces.ts";
+import { type ITransaction} from "../../Interfaces/Interfaces.ts";
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import IconButton from '@mui/material/IconButton';
 import { AddCircle } from "@mui/icons-material";

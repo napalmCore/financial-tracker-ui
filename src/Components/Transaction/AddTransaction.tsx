@@ -1,0 +1,153 @@
+
+import { Alert, Autocomplete, Box, Button, FormControl, MenuItem, Select, Stack, type SelectChangeEvent } from '@mui/material';
+import TextField from '@mui/material/TextField';
+import { useEffect, useState } from 'react';
+import type { ICategory } from '../../Interfaces/Interfaces';
+import CheckIcon from '@mui/icons-material/Check';
+
+export const AddTransaction = () => {
+    const [transactionType, settransactionType] = useState('');
+    const [amount, setAmount] = useState(0);
+    const [description, setDescription] = useState('');
+    const [CategoryId, setCategoryId] = useState<number | null>(null);
+    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    //TODO: Fetch categories from API
+    const [Categories, setCategories] = useState<ICategory[]>([]);
+
+    const GetCategories = () => {
+        fetch(import.meta.env.VITE_API_BASE_URL + "/categories", {
+            method: "GET",
+        }).then((response: Response) => {
+            var res = response.json() as Promise<ICategory[]>;
+            res.then((categories) => {
+                setCategories(categories);
+            });
+        });
+    }
+
+    useEffect(() => {
+        GetCategories();
+    }, []);
+
+    const handleChange = (event: SelectChangeEvent) => {
+        settransactionType(event.target.value as string);
+    };
+
+    const handleSubmit = () => {
+        if (formIsValid()) {
+            setIsLoading(true);
+            fetch(import.meta.env.VITE_API_BASE_URL + "/transactions/Create", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    typeId: transactionType,
+                    amount: amount,
+                    description: description,
+                    CategoryId: CategoryId,
+                    Date : new Date().toISOString()
+                })
+            }).then(() => {
+                setIsLoading(false);
+                setShowSuccessMessage(true);
+                // Reset form fields
+                onCancel();
+            }).catch(() => {
+                setIsLoading(false);
+                // Handle error (e.g., show an error message)
+            });
+        }
+
+
+    }
+
+    const onCancel = () => {
+        // Reset form fields
+        settransactionType('');
+        setAmount(0);
+        setDescription('');
+        setCategoryId(null);
+    }
+
+    const formIsValid = () => {
+        return transactionType !== '' && amount > 0;
+    }
+
+    return (
+        <Box
+            component="form"
+            noValidate
+        >
+            <Alert icon={<CheckIcon fontSize="inherit" />} severity="success"
+                sx={{ display: showSuccessMessage ? 'flex' : 'none', mb: 2 }} 
+                onClose={() => {setShowSuccessMessage(false)}}>
+                Transaction added successfully!
+            </Alert>
+            <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
+                <Select
+                    error={transactionType === ''}
+                    labelId="demo-simple-select-label"
+                    id="transaction-type-select"
+                    value={transactionType}
+                    label="Type"
+                    onChange={handleChange}
+                    required
+                >
+                    <MenuItem value={1}>Debit</MenuItem>
+                    <MenuItem value={2}>Credit</MenuItem>
+                </Select>
+                <TextField
+                    error={amount <= 0}
+                    onChange={e => setAmount(e.target.value as unknown as number)}
+                    id="outlined-number"
+                    label="Number Field"
+                    type="number"
+                    value={amount}
+                    required
+                />
+
+                <Autocomplete
+                    disablePortal
+                    options={Categories}
+                    sx={{ width: 300 }}
+                    getOptionLabel={e => e.name}
+                    renderInput={(params) => <TextField {...params} label="Category" />}
+                    value={Categories.find(c => c.id === CategoryId) || null}
+                    onChange={(event, value) => {
+                        if (value) {
+                            setCategoryId(value.id);
+                        }
+                    }}
+                />
+
+                <TextField
+                    id="outlined-multiline-static"
+                    label="Description"
+                    multiline
+                    rows={4}
+                    onChange={e => setDescription(e.target.value)}
+                    value={description}
+                />
+
+                <Stack spacing={2} direction="row">
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSubmit} // Use onClick for validation check
+                    disabled={!formIsValid() || isLoading == true} // Disable button if form is not valid or loading
+
+                >
+                    Submit
+                </Button>
+                <Button variant="outlined" onClick={() => {onCancel()}}>
+                    Cancel
+                </Button>
+                </Stack>
+
+            </FormControl>
+        </Box>
+    );
+}
