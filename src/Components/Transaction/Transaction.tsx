@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import { type ITransaction} from "../../Interfaces/Interfaces.ts";
-import { DataGrid, type GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, type GridColDef } from '@mui/x-data-grid';
 import IconButton from '@mui/material/IconButton';
-import { AddCircle } from "@mui/icons-material";
-
-
+import { AddCircle, Delete, Edit } from "@mui/icons-material";
 
 export const Transaction = () => {
 
@@ -27,6 +25,20 @@ export const Transaction = () => {
         });
     }, []);
 
+    const handleEdit = (id: number | string) => {
+        window.location.href = "/transaction/" + id;
+    }
+
+    const handleDelete = (id: number | string) => {
+        
+        fetch(baseUrl + "/transactions/Delete/" + id, {
+            method: "DELETE",
+        }).then(() => {}).catch(() => {
+            // Handle error (e.g., show an error message)
+        });
+        setTransactions(transactions.filter(transaction => transaction.id !== id));
+    }
+
     return (
         <>
         <IconButton aria-label="add transaction" color="primary">
@@ -40,8 +52,31 @@ export const Transaction = () => {
                 { field: 'id', headerName: 'ID', width: 70 },
                 { field: 'amount', headerName: 'Amount', width: 130 },
                 { field: 'date', headerName: 'Date', width: 130 },
-                { field: 'Category', headerName: 'Category ID', width: 130, valueGetter: (value, row) => `${row.category?.name || ''}`,},
-                { field: 'description', headerName: 'Description', width: 200 },
+                { field: 'Category', headerName: 'Category', width: 130, valueGetter: (value, row) => `${row.category?.name || ''}`,},
+                { field: 'description', headerName: 'Description', width: 500 },
+                {
+                    field: 'actions',
+                    type: 'actions',
+                    headerName: 'Actions',
+                    width: 100,
+                    cellClassName: 'actions',
+                    getActions: (params) => [
+                    <GridActionsCellItem
+                        key="edit"
+                        icon={<Edit />}
+                        label="Edit"
+                        onClick={() => handleEdit(params.id)}
+                        color="inherit"
+                    />,
+                    <GridActionsCellItem
+                        key="delete"
+                        icon={<Delete />}
+                        label="Delete"
+                        onClick={() => handleDelete(params.id)}
+                        color="inherit"
+                    />,
+                    ],
+                },
             ]}
         />
         </>
