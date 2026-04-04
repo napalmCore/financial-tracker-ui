@@ -1,14 +1,27 @@
 import { useEffect, useState } from "react";
 import { type ITransaction } from "../../Interfaces/Interfaces.ts";
-import { DataGrid, GridActionsCellItem, type GridColDef } from '@mui/x-data-grid';
-import { Box, IconButton } from '@mui/material';
+import { DataGrid, GridActionsCellItem, type GridColDef, type GridRowId } from '@mui/x-data-grid';
+import { Box, IconButton, DialogContent, DialogContentText, DialogActions, Button } from '@mui/material';
 import { AddCircle, Delete, Edit } from "@mui/icons-material";
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
 
 export const Transaction = () => {
 
     const [transactions, setTransactions] = useState<ITransaction[]>([]);
     let baseUrl = import.meta.env.VITE_API_BASE_URL;
+    const [showConfirmation, setshowConfirmation] = useState(false);
+    const [transactionToDelete, setTransactionToDelete] = useState<GridRowId | null>(null);
 
+    const handleClickOpen = (id: GridRowId) => {
+        setshowConfirmation(true);
+        setTransactionToDelete(id);
+    };
+
+    const handleClose = () => {
+        setshowConfirmation(false);
+        setTransactionToDelete(null);
+    };
     useEffect(() => {
         fetch(baseUrl + "/transactions", {
             method: "GET",
@@ -29,14 +42,14 @@ export const Transaction = () => {
         window.location.href = "/transaction/" + id;
     }
 
-    const handleDelete = (id: number | string) => {
-
-        fetch(baseUrl + "/transactions/Delete/" + id, {
+    const handleDelete = () => {
+        fetch(baseUrl + "/transactions/Delete/" + transactionToDelete, {
             method: "DELETE",
         }).then(() => { }).catch(() => {
             // Handle error (e.g., show an error message)
         });
-        setTransactions(transactions.filter(transaction => transaction.id !== id));
+        setTransactions(transactions.filter(transaction => transaction.id !== transactionToDelete));
+        setshowConfirmation(false);
     }
 
     return (
@@ -47,6 +60,27 @@ export const Transaction = () => {
                     window.location.href = "/add-transaction";
                 }} />
             </IconButton>
+            <Dialog
+                open={showConfirmation}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    {"Confirm Deletion"}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Are you sure you want to delete this transaction?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={() => handleDelete()} autoFocus>
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
             <DataGrid
                 rows={transactions}
                 columns={[
@@ -61,7 +95,7 @@ export const Transaction = () => {
                         headerName: 'Actions',
                         width: 100,
                         cellClassName: 'actions',
-                        getActions: (params) => [
+                        getActions: (params ) => [
                             <GridActionsCellItem
                                 key="edit"
                                 icon={<Edit />}
@@ -73,7 +107,7 @@ export const Transaction = () => {
                                 key="delete"
                                 icon={<Delete />}
                                 label="Delete"
-                                onClick={() => handleDelete(params.id)}
+                                onClick={() => handleClickOpen(params.id)}
                                 color="inherit"
                             />,
                         ],
@@ -81,5 +115,5 @@ export const Transaction = () => {
                 ]}
             />
         </Box>
-    );
+    );  
 } 
