@@ -1,14 +1,9 @@
 import { Container } from "@mui/material";
-import AppBar from "./Components/AppBar.tsx";
-import Router from "./Components/Router.tsx";
-
+import Dashboard from "./dashboard/Dashboard.tsx";
 function App() {
   return (
     <>
-    <AppBar />
-    <Container maxWidth="lg" style={{ marginTop: "2rem" }} >
-        <Router />
-    </Container>
+    <Dashboard disableCustomTheme />
     </>
   )
 }

@@ -48,7 +48,7 @@ export const AddTransaction = () => {
                     amount: amount,
                     description: description,
                     CategoryId: CategoryId,
-                    Date : new Date().toISOString()
+                    Date: new Date().toISOString()
                 })
             }).then(() => {
                 setIsLoading(false);
@@ -77,13 +77,10 @@ export const AddTransaction = () => {
     }
 
     return (
-        <Box
-            component="form"
-            noValidate
-        >
+        <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
             <Alert icon={<CheckIcon fontSize="inherit" />} severity="success"
-                sx={{ display: showSuccessMessage ? 'flex' : 'none', mb: 2 }} 
-                onClose={() => {setShowSuccessMessage(false)}}>
+                sx={{ display: showSuccessMessage ? 'flex' : 'none', mb: 2 }}
+                onClose={() => { setShowSuccessMessage(false) }}>
                 Transaction added successfully!
             </Alert>
             <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
@@ -133,18 +130,18 @@ export const AddTransaction = () => {
                 />
 
                 <Stack spacing={2} direction="row">
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSubmit} // Use onClick for validation check
-                    disabled={!formIsValid() || isLoading == true} // Disable button if form is not valid or loading
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleSubmit} // Use onClick for validation check
+                        disabled={!formIsValid() || isLoading == true} // Disable button if form is not valid or loading
 
-                >
-                    Submit
-                </Button>
-                <Button variant="outlined" onClick={() => {onCancel()}}>
-                    Cancel
-                </Button>
+                    >
+                        Submit
+                    </Button>
+                    <Button variant="outlined" onClick={() => { onCancel() }}>
+                        Cancel
+                    </Button>
                 </Stack>
 
             </FormControl>
