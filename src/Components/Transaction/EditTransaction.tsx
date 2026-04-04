@@ -6,7 +6,7 @@ import type { ICategory, ITransaction } from '../../Interfaces/Interfaces';
 import CheckIcon from '@mui/icons-material/Check';
 import { useParams } from 'react-router';
 
-export const EditTransaction = (props : { transactionId?: string }) => {
+export const EditTransaction = (props: { transactionId?: string }) => {
     const params = useParams();
     const [CategoryId, setCategoryId] = useState<number | null>(null);
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -15,7 +15,7 @@ export const EditTransaction = (props : { transactionId?: string }) => {
     const [transactionType, settransactionType] = useState('');
     const [amount, setAmount] = useState(0);
     const [description, setDescription] = useState('');
-    const [transactionId, setTransactionId] = useState(params.transactionId || '');  
+    const [transactionId, setTransactionId] = useState(params.transactionId || '');
 
     //TODO: Fetch categories from API
     const [Categories, setCategories] = useState<ICategory[]>([]);
@@ -78,7 +78,7 @@ export const EditTransaction = (props : { transactionId?: string }) => {
                     description: description,
                     CategoryId: CategoryId
                 })
-            }).then((e : Response) => {
+            }).then((e: Response) => {
                 var res = e.json() as Promise<ITransaction>;
                 res.then((transaction) => {
                     setTransaction(transaction);
@@ -91,13 +91,13 @@ export const EditTransaction = (props : { transactionId?: string }) => {
                     // Handle error (e.g., show an error message)
                     console.log("Error parsing response after updating transaction" + transactionId);
                     console.log(error);
-                 });
+                });
                 setIsLoading(false);
             }).catch((e) => {
                 setIsLoading(false);
                 // Handle error (e.g., show an error message)
                 console.log("Error updating transaction" + transactionId);
-                console.log(e);  
+                console.log(e);
             });
         }
 
@@ -109,7 +109,7 @@ export const EditTransaction = (props : { transactionId?: string }) => {
         settransactionType(transaction.typeId);
         setAmount(transaction.amount);
         setDescription(transaction.description);
-        setCategoryId(transaction.category?.id || null );
+        setCategoryId(transaction.category?.id || null);
     }
 
     const formIsValid = () => {
@@ -117,13 +117,10 @@ export const EditTransaction = (props : { transactionId?: string }) => {
     }
 
     return (
-        <Box
-            component="form"
-            noValidate
-        >
+        <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
             <Alert icon={<CheckIcon fontSize="inherit" />} severity="success"
-                sx={{ display: showSuccessMessage ? 'flex' : 'none', mb: 2 }} 
-                onClose={() => {setShowSuccessMessage(false)}}>
+                sx={{ display: showSuccessMessage ? 'flex' : 'none', mb: 2 }}
+                onClose={() => { setShowSuccessMessage(false) }}>
                 Transaction added successfully!
             </Alert>
             <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
@@ -131,7 +128,7 @@ export const EditTransaction = (props : { transactionId?: string }) => {
                     error={transactionType === ''}
                     labelId="demo-simple-select-label"
                     id="transaction-type-select"
-                    value={transactionType || '' }
+                    value={transactionType || ''}
                     label="Type"
                     onChange={handleChange}
                     required
@@ -173,18 +170,18 @@ export const EditTransaction = (props : { transactionId?: string }) => {
                 />
 
                 <Stack spacing={2} direction="row">
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSubmit} // Use onClick for validation check
-                    disabled={!formIsValid() || isLoading == true} // Disable button if form is not valid or loading
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleSubmit} // Use onClick for validation check
+                        disabled={!formIsValid() || isLoading == true} // Disable button if form is not valid or loading
 
-                >
-                    Submit
-                </Button>
-                <Button variant="outlined" onClick={() => {onCancel()}}>
-                    Cancel
-                </Button>
+                    >
+                        Submit
+                    </Button>
+                    <Button variant="outlined" onClick={() => { onCancel() }}>
+                        Cancel
+                    </Button>
                 </Stack>
 
             </FormControl>
