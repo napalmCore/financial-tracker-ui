@@ -10,6 +10,7 @@ import HighlightedCard from './HighlightedCard';
 import PageViewsBarChart from './PageViewsBarChart';
 import SessionsChart from './SessionsChart';
 import StatCard, { StatCardProps } from './StatCard';
+import { Transaction } from '../../Components/Transaction/Transaction';
 
 const data: StatCardProps[] = [
   {
@@ -77,7 +78,7 @@ export default function MainGrid() {
       </Typography>
       <Grid container spacing={2} columns={12}>
         <Grid size={{ xs: 12, lg: 9 }}>
-          <CustomizedDataGrid />
+          <Transaction />
         </Grid>
         <Grid size={{ xs: 12, lg: 3 }}>
           <Stack

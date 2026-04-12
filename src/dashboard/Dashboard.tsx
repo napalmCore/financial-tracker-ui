@@ -13,7 +13,6 @@ import MainGrid from './components/MainGrid';
 import SideMenu from './components/SideMenu';
 import AppTheme from '../shared-theme/AppTheme';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
-import Router from '../Components/Router';
 import Copyright from './internals/components/Copyright';
 
 import {
@@ -60,7 +59,6 @@ export default function Dashboard(props: { disableCustomTheme?: boolean }) {
           >
             <Header />
           <>
-            <Router />
           </>
           </Stack>
           <Copyright sx={{ my: 4 }} />

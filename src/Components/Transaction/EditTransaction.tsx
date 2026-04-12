@@ -6,7 +6,7 @@ import type { ICategory, ITransaction } from '../../Interfaces/Interfaces';
 import CheckIcon from '@mui/icons-material/Check';
 import { useParams } from 'react-router';
 
-export const EditTransaction = (props: { transactionId?: string }) => {
+export const EditTransaction = (props: { transactionId: number, onCancel: () => void, onEdit: () => void }) => {
     const params = useParams();
     const [CategoryId, setCategoryId] = useState<number | null>(null);
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -15,7 +15,7 @@ export const EditTransaction = (props: { transactionId?: string }) => {
     const [transactionType, settransactionType] = useState('');
     const [amount, setAmount] = useState(0);
     const [description, setDescription] = useState('');
-    const [transactionId, setTransactionId] = useState(params.transactionId || '');
+    const [transactionId, setTransactionId] = useState(props.transactionId);
 
     //TODO: Fetch categories from API
     const [Categories, setCategories] = useState<ICategory[]>([]);
@@ -87,6 +87,7 @@ export const EditTransaction = (props: { transactionId?: string }) => {
                     setDescription(transaction.description);
                     setCategoryId(transaction.category?.id);
                     setShowSuccessMessage(true);
+                    props.onEdit();
                 }).catch((error) => {
                     // Handle error (e.g., show an error message)
                     console.log("Error parsing response after updating transaction" + transactionId);
@@ -110,6 +111,7 @@ export const EditTransaction = (props: { transactionId?: string }) => {
         setAmount(transaction.amount);
         setDescription(transaction.description);
         setCategoryId(transaction.category?.id || null);
+        props.onCancel();
     }
 
     const formIsValid = () => {

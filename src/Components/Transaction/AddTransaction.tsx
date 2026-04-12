@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import type { ICategory } from '../../Interfaces/Interfaces';
 import CheckIcon from '@mui/icons-material/Check';
 
-export const AddTransaction = () => {
+export const AddTransaction = (props: { onCancel: () => void , onAdd: () => void }) => {
     const [transactionType, settransactionType] = useState('');
     const [amount, setAmount] = useState(0);
     const [description, setDescription] = useState('');
@@ -53,6 +53,7 @@ export const AddTransaction = () => {
             }).then(() => {
                 setIsLoading(false);
                 setShowSuccessMessage(true);
+                props.onAdd();
                 // Reset form fields
                 onCancel();
             }).catch(() => {
@@ -60,8 +61,6 @@ export const AddTransaction = () => {
                 // Handle error (e.g., show an error message)
             });
         }
-
-
     }
 
     const onCancel = () => {
@@ -70,6 +69,7 @@ export const AddTransaction = () => {
         setAmount(0);
         setDescription('');
         setCategoryId(null);
+        props.onCancel();
     }
 
     const formIsValid = () => {
