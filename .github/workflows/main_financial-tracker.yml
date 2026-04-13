@@ -12,6 +12,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      NODE_ENV: production
+      VITE_API_BASE_URL: https://financial-tracker-api-cscjhkasdgfvfvf4.canadacentral-01.azurewebsites.net/api/v1.0
     permissions:
       contents: read #This is required for actions/checkout
 
