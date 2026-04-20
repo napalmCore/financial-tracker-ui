@@ -41,6 +41,7 @@ export const Transaction = () => {
         }).then((transactions: ITransaction[]) => {
             setTransactions(transactions);
             setShowAddDialog(false);
+            setShowEditDialog(false);
         }).catch((err) => {
             console.log("Error parsing response");
             console.log(err);
