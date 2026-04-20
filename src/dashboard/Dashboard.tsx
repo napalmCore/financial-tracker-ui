@@ -9,7 +9,7 @@ import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
 import AppNavbar from './components/AppNavbar';
 import Header from './components/Header';
-import MainGrid from './components/MainGrid';
+import MainGrid from './components/MainGrid.tsx';
 import SideMenu from './components/SideMenu';
 import AppTheme from '../shared-theme/AppTheme';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
@@ -59,6 +59,7 @@ export default function Dashboard(props: { disableCustomTheme?: boolean }) {
           >
             <Header />
           <>
+            <MainGrid />
           </>
           </Stack>
           <Copyright sx={{ my: 4 }} />
