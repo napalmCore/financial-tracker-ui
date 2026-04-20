@@ -30,6 +30,7 @@ export const Transaction = () => {
     const [transactionToDelete, setTransactionToDelete] = useState<GridRowId | null>(null);
     const [showAddDialog, setShowAddDialog] = useState(false);
     const [transactionToEdit, setTransactionToEdit] = useState<number>(0);
+    const [showEditDialog, setShowEditDialog] = useState(false);
 
     const onAddTransaction = () => {
         // Refresh transactions after adding a new one
@@ -54,7 +55,10 @@ export const Transaction = () => {
     const handleClose = () => {
         setshowConfirmation(false);
         setTransactionToDelete(null);
+        setShowAddDialog(false);
+        setShowEditDialog(false);
     };
+    
     useEffect(() => {
         fetch(baseUrl + "/transactions", {
             method: "GET",
@@ -73,7 +77,7 @@ export const Transaction = () => {
 
     const handleEdit = (id: number) => {
         setTransactionToEdit(id);
-        setShowAddDialog(true);
+        setShowEditDialog(true);
     }
 
     const handleDelete = () => {
@@ -114,7 +118,7 @@ export const Transaction = () => {
             </Modal>
 
             <Modal
-                open={showAddDialog}
+                open={showEditDialog}
                 onClose={handleClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
@@ -122,10 +126,10 @@ export const Transaction = () => {
 
                 <Box sx={style}>
                     <Typography id="keep-mounted-modal-title" variant="h6" component="h2">
-                        Add Transaction
+                        Edit Transaction
                     </Typography>
                     <EditTransaction
-                        onCancel={() => setShowAddDialog(false)}
+                        onCancel={() => setShowEditDialog(false)}
                         onEdit={onAddTransaction}
                         transactionId={transactionToEdit}
                     />
