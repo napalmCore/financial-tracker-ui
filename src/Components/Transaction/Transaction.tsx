@@ -31,6 +31,7 @@ export const Transaction = () => {
     const [showAddDialog, setShowAddDialog] = useState(false);
     const [transactionToEdit, setTransactionToEdit] = useState<number>(0);
     const [showEditDialog, setShowEditDialog] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const onAddTransaction = () => {
         // Refresh transactions after adding a new one
@@ -61,6 +62,7 @@ export const Transaction = () => {
     };
     
     useEffect(() => {
+        setIsLoading(true);
         fetch(baseUrl + "/transactions", {
             method: "GET",
         }).then((response: Response) => {
@@ -69,9 +71,11 @@ export const Transaction = () => {
             res.then((transactions: ITransaction[]) => {
                 console.log(transactions);
                 setTransactions(transactions);
+                setIsLoading(false);
             }).catch((err) => {
                 console.log("Error parsing response");
                 console.log(err);
+                setIsLoading(false);
             });
         });
     }, []);
@@ -161,6 +165,7 @@ export const Transaction = () => {
             </Dialog>
             <DataGrid
                 rows={transactions}
+                loading={isLoading}
                 columns={[
                     { field: 'id', headerName: 'ID', width: 70 },
                     { field: 'amount', headerName: 'Amount', width: 130 },
