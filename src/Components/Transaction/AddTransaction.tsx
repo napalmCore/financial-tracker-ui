@@ -4,6 +4,7 @@ import TextField from '@mui/material/TextField';
 import { useEffect, useState } from 'react';
 import type { ICategory } from '../../Interfaces/Interfaces';
 import CheckIcon from '@mui/icons-material/Check';
+import { getApiUrl } from '../../helpers/utils';
 
 export const AddTransaction = (props: { onCancel: () => void , onAdd: () => void }) => {
     const [transactionType, settransactionType] = useState('');
@@ -16,8 +17,8 @@ export const AddTransaction = (props: { onCancel: () => void , onAdd: () => void
     //TODO: Fetch categories from API
     const [Categories, setCategories] = useState<ICategory[]>([]);
 
-    const GetCategories = () => {
-        fetch(import.meta.env.VITE_API_BASE_URL + "/categories", {
+    const GetCategories = (transactionTypeId) => {
+        fetch(getApiUrl("v2.0") + "/categories?transactionTypeId=" + transactionTypeId, {
             method: "GET",
         }).then((response: Response) => {
             var res = response.json() as Promise<ICategory[]>;
@@ -28,8 +29,10 @@ export const AddTransaction = (props: { onCancel: () => void , onAdd: () => void
     }
 
     useEffect(() => {
-        GetCategories();
-    }, []);
+        if (transactionType) {
+            GetCategories(transactionType);
+        }
+    }, [transactionType]);
 
     const handleChange = (event: SelectChangeEvent) => {
         settransactionType(event.target.value as string);
@@ -38,7 +41,7 @@ export const AddTransaction = (props: { onCancel: () => void , onAdd: () => void
     const handleSubmit = () => {
         if (formIsValid()) {
             setIsLoading(true);
-            fetch(import.meta.env.VITE_API_BASE_URL + "/transactions/Create", {
+            fetch(getApiUrl(null) + "/transactions/Create", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
