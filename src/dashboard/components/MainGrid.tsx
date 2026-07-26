@@ -2,53 +2,84 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import Copyright from '../internals/components/Copyright';
-import ChartUserByCountry from './ChartUserByCountry';
-import CustomizedTreeView from './CustomizedTreeView';
-import CustomizedDataGrid from './CustomizedDataGrid';
-import HighlightedCard from './HighlightedCard';
-import PageViewsBarChart from './PageViewsBarChart';
-import SessionsChart from './SessionsChart';
-import StatCard, { StatCardProps } from './StatCard';
-import { Transaction } from '../../Components/Transaction/Transaction';
+import { getApiUrl } from '../../helpers/utils';
 
-const data: StatCardProps[] = [
-  {
-    title: 'Users',
-    value: '14k',
-    interval: 'Last 30 days',
-    trend: 'up',
-    data: [
-      200, 24, 220, 260, 240, 380, 100, 240, 280, 240, 300, 340, 320, 360, 340, 380,
-      360, 400, 380, 420, 400, 640, 340, 460, 440, 480, 460, 600, 880, 920,
-    ],
-  },
-  {
-    title: 'Conversions',
-    value: '325',
-    interval: 'Last 30 days',
-    trend: 'down',
-    data: [
-      1640, 1250, 970, 1130, 1050, 900, 720, 1080, 900, 450, 920, 820, 840, 600, 820,
-      780, 800, 760, 380, 740, 660, 620, 840, 500, 520, 480, 400, 360, 300, 220,
-    ],
-  },
-  {
-    title: 'Event count',
-    value: '200k',
-    interval: 'Last 30 days',
-    trend: 'neutral',
-    data: [
-      500, 400, 510, 530, 520, 600, 530, 520, 510, 730, 520, 510, 530, 620, 510, 530,
-      520, 410, 530, 520, 610, 530, 520, 610, 530, 420, 510, 430, 520, 510,
-    ],
-  },
-];
+import { Transaction } from '../../Components/Transaction/Transaction';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  Title,
+} from 'chart.js';
+import { Pie } from 'react-chartjs-2';
+import React from 'react';
+import { TransactionsGroupedByCategory } from '../../Interfaces/Interfaces';
+import { PieChart, PieValueType } from '@mui/x-charts';
+ChartJS.register(ArcElement, Tooltip, Legend, Title);
+
+  const pieOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'right' },
+      title: { display: true, text: 'Traffic Sources' },
+      tooltip: {
+        callbacks: {
+          // Show percentage alongside the raw value
+          label: (ctx) => {
+            const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+            const pct = ((ctx.parsed / total) * 100).toFixed(1);
+            return `${ctx.label}: ${ctx.parsed} (${pct}%)`;
+          },
+        },
+      },
+    },
+  };
 
 export default function MainGrid() {
+  const [amountByCategory, setAmountsByCategory] = React.useState<TransactionsGroupedByCategory[]>([]);
+  const [pieData, setPieData] = React.useState<any>([])
+  const fetchAmountsByCategory = () : void => {
+      fetch(getApiUrl(null) + "/Transactions/GetGroupedByCategory?from=2023-03-06T14:30:00Z&to=2026-08-31T14:30:00Z&typeId=1", {
+          method: "GET",
+     }).then((response: Response) => {
+          var res = response.json() as Promise<TransactionsGroupedByCategory[]>;
+          res.then((categories) => {
+              console.log(categories)
+              setAmountsByCategory(categories);
+              var pieDataDto : any = []
+              categories.forEach(c => {
+                  console.log("filling category =>", c);
+                  pieDataDto.push({
+                    value: c.amount,
+                    id: c.id,
+                    label: c.category.name
+                  })
+              });
+              console.log(pieDataDto)
+              setPieData(pieDataDto);
+          });
+      });
+  };
+
+  React.useEffect(() => {
+    fetchAmountsByCategory()
+  },[]);
+
   return (
     <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
       {/* cards */}
+      <Typography>Spending</Typography>
+      <PieChart
+        series={[
+          {
+            data: pieData,
+          },
+        ]}
+        width={200}
+        height={200}
+      />
       <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
         Overview
       </Typography>
@@ -58,20 +89,7 @@ export default function MainGrid() {
         columns={12}
         sx={{ mb: (theme) => theme.spacing(2) }}
       >
-        {data.map((card, index) => (
-          <Grid key={index} size={{ xs: 12, sm: 6, lg: 3 }}>
-            <StatCard {...card} />
-          </Grid>
-        ))}
-        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-          <HighlightedCard />
-        </Grid>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <SessionsChart />
-        </Grid>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <PageViewsBarChart />
-        </Grid>
+
       </Grid>
       <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
         Details
@@ -85,8 +103,6 @@ export default function MainGrid() {
             direction={{ xs: 'column', sm: 'row', lg: 'column' }}
             sx={{ gap: 2 }}
           >
-            <CustomizedTreeView />
-            <ChartUserByCountry />
           </Stack>
         </Grid>
       </Grid>

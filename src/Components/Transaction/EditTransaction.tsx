@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import type { ICategory, ITransaction } from '../../Interfaces/Interfaces';
 import CheckIcon from '@mui/icons-material/Check';
 import { useParams } from 'react-router';
+import { getApiUrl } from '../../helpers/utils';
 
 export const EditTransaction = (props: { transactionId: number, onCancel: () => void, onEdit: () => void }) => {
     const params = useParams();
@@ -20,8 +21,8 @@ export const EditTransaction = (props: { transactionId: number, onCancel: () => 
     //TODO: Fetch categories from API
     const [Categories, setCategories] = useState<ICategory[]>([]);
 
-    const GetCategories = () => {
-        fetch(import.meta.env.VITE_API_BASE_URL + "/categories", {
+    const GetCategories = (transactionTypeId : string) => {
+        fetch(getApiUrl("v2.0") + "/categories?transactionTypeId=" + transactionTypeId, {
             method: "GET",
         }).then((response: Response) => {
             var res = response.json() as Promise<ICategory[]>;
@@ -34,7 +35,7 @@ export const EditTransaction = (props: { transactionId: number, onCancel: () => 
     const GetTransaction = () => {
         setIsLoading(true);
         if (transactionId) {
-            fetch(import.meta.env.VITE_API_BASE_URL + "/transactions/GetById/" + transactionId, {
+            fetch(getApiUrl(null) + "/transactions/GetById/" + transactionId, {
                 method: "GET",
             }).then((response: Response) => {
                 var res = response.json() as Promise<ITransaction>;
@@ -55,9 +56,12 @@ export const EditTransaction = (props: { transactionId: number, onCancel: () => 
     }
 
     useEffect(() => {
-        GetCategories();
         GetTransaction();
     }, []);
+
+    useEffect(() => {
+        GetCategories(transactionType);
+    }, [transactionType]);
 
     const handleChange = (event: SelectChangeEvent) => {
         settransactionType(event.target.value as string);
@@ -66,7 +70,7 @@ export const EditTransaction = (props: { transactionId: number, onCancel: () => 
     const handleSubmit = () => {
         if (formIsValid()) {
             setIsLoading(true);
-            fetch(import.meta.env.VITE_API_BASE_URL + "/transactions/Update/" + transactionId, {
+            fetch(getApiUrl(null) + "/transactions/Update/" + transactionId, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json"

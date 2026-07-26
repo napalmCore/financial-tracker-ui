@@ -9,6 +9,7 @@ import {AddTransaction} from "./AddTransaction.tsx";
 import Modal from '@mui/material/Modal';
 import Typography from '@mui/material/Typography';
 import { EditTransaction } from "./EditTransaction.tsx";
+import { getApiUrl } from '../../helpers/utils';
 
 const style = {
   position: 'absolute',
@@ -25,7 +26,6 @@ const style = {
 export const Transaction = () => {
 
     const [transactions, setTransactions] = useState<ITransaction[]>([]);
-    let baseUrl = import.meta.env.VITE_API_BASE_URL;
     const [showConfirmation, setshowConfirmation] = useState(false);
     const [transactionToDelete, setTransactionToDelete] = useState<GridRowId | null>(null);
     const [showAddDialog, setShowAddDialog] = useState(false);
@@ -35,7 +35,7 @@ export const Transaction = () => {
 
     const onAddTransaction = () => {
         // Refresh transactions after adding a new one
-        fetch(baseUrl + "/transactions", {
+        fetch(getApiUrl(null) + "/transactions", {
             method: "GET",
         }).then((response: Response) => {
             return response.json();
@@ -63,7 +63,7 @@ export const Transaction = () => {
     
     useEffect(() => {
         setIsLoading(true);
-        fetch(baseUrl + "/transactions", {
+        fetch(getApiUrl(null) + "/transactions", {
             method: "GET",
         }).then((response: Response) => {
             var res = response.json() as Promise<ITransaction[]>;
@@ -86,7 +86,7 @@ export const Transaction = () => {
     }
 
     const handleDelete = () => {
-        fetch(baseUrl + "/transactions/Delete/" + transactionToDelete, {
+        fetch(getApiUrl(null) + "/transactions/Delete/" + transactionToDelete, {
             method: "DELETE",
         }).then(() => { }).catch(() => {
             // Handle error (e.g., show an error message)
