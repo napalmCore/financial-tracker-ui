@@ -34,10 +34,6 @@ export default function Dashboard(props: { disableCustomTheme?: boolean }) {
     <AppTheme {...props} themeComponents={xThemeComponents}>
       <CssBaseline enableColorScheme />
       <Box sx={{ display: 'flex' }}>
-        <SideMenu />
-        <AppNavbar />
-
-
         <Box
           component="main"
           sx={(theme) => ({
@@ -57,12 +53,10 @@ export default function Dashboard(props: { disableCustomTheme?: boolean }) {
               mt: { xs: 8, md: 0 },
             }}
           >
-            <Header />
           <>
             <MainGrid />
           </>
           </Stack>
-          <Copyright sx={{ my: 4 }} />
         </Box>
       </Box>
     </AppTheme>
