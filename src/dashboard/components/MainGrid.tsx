@@ -70,7 +70,7 @@ export default function MainGrid() {
   return (
     <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
       {/* cards */}
-      <Typography>Spending</Typography>
+      <Typography>Spending chart</Typography>
       <PieChart
         series={[
           {
@@ -80,22 +80,8 @@ export default function MainGrid() {
         width={200}
         height={200}
       />
-      <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
-        Overview
-      </Typography>
-      <Grid
-        container
-        spacing={2}
-        columns={12}
-        sx={{ mb: (theme) => theme.spacing(2) }}
-      >
-
-      </Grid>
-      <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
-        Details
-      </Typography>
       <Grid container spacing={2} columns={12}>
-        <Grid size={{ xs: 12, lg: 9 }}>
+        <Grid size={{ xs: 12, lg: 115 }}>
           <Transaction />
         </Grid>
         <Grid size={{ xs: 12, lg: 3 }}>
